@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Auto URL Cards</title>
+  <style>
+    body{font-family:Arial;margin:20px;background:#f6f7fb}
+    h1{margin-bottom:10px}
+
+    /* Admin Panel HIDDEN */
+    .panel{display:none}
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+      gap:12px;
+    }
+    .card{
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 5px 18px rgba(0,0,0,0.08);
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .thumb{
+      height:130px;
+      background:#eaeaea;
+      background-size:cover;
+      background-position:center;
+    }
+    .meta{padding:10px}
+    .title{font-size:15px;font-weight:bold}
+  </style>
+</head>
+<body>
+
+<h1>रोजाना की जानकारी</h1>
+
+<!-- Hidden Admin Panel -->
+<div class="panel">
+  <input id="urlInput" placeholder="https://example.com" />
+  <button onclick="addUrl()">Add</button>
+  <div id="urlList"></div>
+</div>
+
+<div id="cards" class="cards"></div>
+
+<script>
+/* -----------------------
+   ADMIN URL STORAGE
+------------------------ */
+const STORAGE_KEY = "ADMIN_URL_LIST";
+
+let ADMIN_URLS = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+  "https://cirithehelper.blogspot.com/2025/10/ciri-helper_17.html?m=1",
+  "https://cirithehelper.blogspot.com/2025/10/ciri-helper.html?m=1",
+  "https://cirithehelper.blogspot.com/2025/11/b.html?m=1"
+];
+
+function saveUrls(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ADMIN_URLS));
+}
+
+/* -----------------------
+   LOAD CARDS
+------------------------ */
+window.addEventListener("DOMContentLoaded", loadCards);
+
+function loadCards(){
+  const cards = document.getElementById("cards");
+  cards.innerHTML = "";
+  ADMIN_URLS.forEach(url => createCard(url));
+}
+
+async function createCard(url){
+  const card = document.createElement("div");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="thumb"></div>
+    <div class="meta">
+      <div class="title">Loading...</div>
+    </div>
+  `;
+  document.getElementById("cards").appendChild(card);
+
+  try{
+    const html = await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url)).then(r=>r.text());
+    const {title,image} = extractMeta(html,url);
+
+    card.querySelector(".title").textContent = title;
+
+    if(image){
+      card.querySelector(".thumb")
+          .style.backgroundImage = `url('${new URL(image,url)}')`;
+    }
+
+    // FULL CARD CLICK
+    card.onclick = ()=> window.open(url,"_blank");
+
+  }catch(e){
+    card.querySelector(".title").textContent = "No Data";
+  }
+}
+
+/* -----------------------
+   META EXTRACTOR
+------------------------ */
+function extractMeta(html,base){
+  const doc = new DOMParser().parseFromString(html,"text/html");
+
+  const title =
+    doc.querySelector("meta[property='og:title']")?.content ||
+    doc.querySelector("title")?.innerText ||
+    "No Title";
+
+  const image =
+    doc.querySelector("meta[property='og:image']")?.content ||
+    null;
+
+  return {title,image};
+}
+
+/* -----------------------
+   ADD URL (Admin Hidden Panel)
+------------------------ */
+function addUrl(){
+  const val = document.getElementById("urlInput").value.trim();
+  if(!val) return;
+  ADMIN_URLS.push(val);
+  saveUrls();
+  loadCards();
+}
+</script>
+
+</body>
+</html>

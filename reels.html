@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#000;
+      --gap:12px;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family:system-ui, -apple-system, "Segoe UI", Roboto;
+    }
+
+    .app {
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    }
+
+    header {
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:black;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+      z-index: 50;
+    }
+    header h1{
+      font-size:16px;
+      margin:0;
+      font-weight:600;
+      color:#fff;
+    }
+
+    .feed {
+      flex:1;
+      height:calc(100vh - 56px);
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      background:var(--bg);
+    }
+
+    .item {
+      height:100%;
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      scroll-snap-align:start;
+      padding:var(--gap);
+      box-sizing:border-box;
+    }
+
+    .card {
+      width:100%;
+      max-width:640px;
+      height:calc(100vh - 120px);
+      background:transparent;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .card blockquote,
+    .card iframe {
+      width:100% !important;
+      height:100% !important;
+      display:block;
+      margin:0;
+      padding:0;
+    }
+
+    .hint {
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      top:10px;
+      background:rgba(0,0,0,0.5);
+      color:#fff;
+      padding:6px 14px;
+      border-radius:20px;
+      font-size:13px;
+      z-index:60;
+      backdrop-filter: blur(5px);
+    }
+  </style>
+
+  <script async src="https://www.instagram.com/embed.js"></script>
+</head>
+<body>
+  <div class="app">
+   
+    <main class="feed" id="feed">
+
+      <!-- REEL 1 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DQLh5ivkq_X/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 2 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRj0Uw-kqAz/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 3 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjxBQVklQh/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 4 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjuo-Qkr8o/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 5 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjrk4GEipx/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 6 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjWdk2EhOa/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 7 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjUjV1jJim/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 8 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjG6IMEutm/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+      <!-- REEL 9 -->
+      <section class="item">
+        <div class="card">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DRjDwMOEmi3/" data-instgrm-version="14"></blockquote>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ⭐ Scroll Resume Script ⭐ -->
+  <script>
+    const FEED = document.getElementById("feed");
+    const KEY = "reels_scroll_position";
+
+    // SAVE scroll position
+    FEED.addEventListener("scroll", () => {
+      localStorage.setItem(KEY, FEED.scrollTop);
+    });
+
+    // RESTORE scroll position
+    window.addEventListener("load", () => {
+      const pos = localStorage.getItem(KEY);
+      if (pos !== null) {
+        FEED.scrollTo({
+          top: Number(pos),
+          behavior: "instant"
+        });
+      }
+
+      // process Instagram embeds
+      setTimeout(() => {
+        if (window.instgrm) window.instgrm.Embeds.process();
+      }, 800);
+    });
+  </script>
+
+</body>
+</html>
