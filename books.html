@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Books App</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:#fff;
+}
+
+/* TOP BAR */
+.header{
+  height:56px;
+  background:#111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:10;
+}
+
+/* CONTENT */
+.content{
+  padding:70px 14px 90px;
+}
+
+/* CARD */
+.card{
+  background:#16161d;
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:16px;
+}
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+.body{
+  padding:14px;
+}
+.title{
+  font-size:16px;
+  font-weight:600;
+}
+.price{
+  color:#aaa;
+  margin:6px 0;
+  font-size:14px;
+}
+.offer{
+  color:#22c55e;
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:14px;
+  background:#4f46e5;
+  color:#fff;
+  font-size:15px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:70px;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+.nav-btn{
+  font-size:13px;
+  color:#aaa;
+  cursor:pointer;
+}
+.nav-btn.active{
+  color:#fff;
+  font-weight:600;
+}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="header">📚 Books</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div id="newBooks" class="section active"></div>
+  <div id="myBooks" class="section"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div id="tab-new" class="nav-btn active">New Books</div>
+  <div id="tab-my" class="nav-btn">My Books</div>
+</div>
+
+<script>
+/* 🔐 LOGIN CHECK */
+const USER = localStorage.getItem("userKey");
+if(!USER){
+  location.href = "login.html";
+}
+
+/* FIREBASE INIT */
+firebase.initializeApp({
+  apiKey:"AIzaSyDuSRmCqggE2eS6l3nHciy4cNvrwyw-l_I",
+  authDomain:"cirithe.firebaseapp.com",
+  projectId:"cirithe"
+});
+const db = firebase.firestore();
+
+/* TAB SWITCH */
+const tabNew = document.getElementById("tab-new");
+const tabMy  = document.getElementById("tab-my");
+const secNew = document.getElementById("newBooks");
+const secMy  = document.getElementById("myBooks");
+
+tabNew.onclick = () => {
+  tabNew.classList.add("active");
+  tabMy.classList.remove("active");
+  secNew.classList.add("active");
+  secMy.classList.remove("active");
+};
+
+tabMy.onclick = () => {
+  tabMy.classList.add("active");
+  tabNew.classList.remove("active");
+  secMy.classList.add("active");
+  secNew.classList.remove("active");
+  loadMyBooks();
+};
+
+/* LOAD NEW BOOKS (FROM ADMIN) */
+db.collection("pages").orderBy("time","desc")
+.onSnapshot(snapshot=>{
+  secNew.innerHTML="";
+  snapshot.forEach(doc=>{
+    const p = doc.data();
+    secNew.innerHTML += `
+      <div class="card">
+        ${p.image?`<img src="${p.image}">`:``}
+        <div class="body">
+          <div class="title">${p.title}</div>
+          ${p.price?`<div class="price">₹${p.price}</div>`:``}
+          ${p.offer?`<div class="offer">${p.offer}% OFF</div>`:``}
+          <button class="btn"
+            onclick="buyBook('${doc.id}','${p.link}')">
+            Buy / Open
+          </button>
+        </div>
+      </div>
+    `;
+  });
+});
+
+/* BUY BOOK (PAYMENT LINK) */
+function buyBook(bookId, link){
+  localStorage.setItem("pendingBook", bookId);
+  window.open(link, "_blank");
+}
+
+/* LOAD MY BOOKS (ONLY PURCHASED) */
+function loadMyBooks(){
+  secMy.innerHTML="Loading...";
+
+  db.collection("orders").where("userKey","==",USER)
+  .onSnapshot(async snapshot=>{
+    secMy.innerHTML="";
+    if(snapshot.empty){
+      secMy.innerHTML="<p>आपने अभी कोई book नहीं खरीदी</p>";
+      return;
+    }
+
+    for(const order of snapshot.docs){
+      const bookDoc = await db.collection("pages")
+        .doc(order.data().bookId).get();
+
+      if(!bookDoc.exists) continue;
+
+      const p = bookDoc.data();
+      secMy.innerHTML += `
+        <div class="card">
+          ${p.image?`<img src="${p.image}">`:``}
+          <div class="body">
+            <div class="title">${p.title}</div>
+            <button class="btn"
+              onclick="window.open('${p.link}','_blank')">
+              Open Book
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  });
+}
+</script>
+
+</body>
+</html>
