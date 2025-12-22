@@ -11,9 +11,12 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
   font-family:Poppins,Arial,sans-serif;
-  background:#000;
+  background:
+    linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.85)),
+    url("bg.jpg") center/cover no-repeat fixed;
   color:#fff;
   overflow-x:hidden;
 }
@@ -97,10 +100,21 @@ body{
   align-items:center;
   z-index:2000;
 }
+
 .nav-item{
-  text-align:center;
-  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
   cursor:pointer;
+  color:#fff;
+}
+.nav-item img{
+  width:26px;
+  height:26px;
+  margin-bottom:4px;
+  filter:brightness(0) invert(1);
 }
 
 /* NOTIFICATION */
@@ -157,13 +171,24 @@ body{
 <!-- CONTENT -->
 <div class="content" id="cards">Loading...</div>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV WITH ICONS -->
 <div class="bottom-nav">
-  <div class="nav-item" onclick="goHome()">Home</div>
-  <div class="nav-item" onclick="goInfo()">Info</div>
-  <div class="nav-item" onclick="goBooks()">Books</div>
-  <div class="nav-item" onclick="goReels()">Reels</div>
-
+  <div class="nav-item" onclick="goHome()">
+    <img src="icons/home.png">
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goInfo()">
+    <img src="icons/info.png">
+    <span>Info</span>
+  </div>
+  <div class="nav-item" onclick="goBooks()">
+    <img src="icons/book.png">
+    <span>Books</span>
+  </div>
+  <div class="nav-item" onclick="goReels()">
+    <img src="icons/reels.png">
+    <span>Reels</span>
+  </div>
 </div>
 
 <!-- NOTIFICATION PAGE -->
@@ -173,7 +198,7 @@ body{
 </div>
 
 <script>
-/* FIREBASE CONFIG (FINAL) */
+/* FIREBASE CONFIG */
 firebase.initializeApp({
   apiKey: "AIzaSyDuSRmCqggE2eS6l3nHciy4cNvrwyw-l_I",
   authDomain: "cirithe.firebaseapp.com",
@@ -199,7 +224,7 @@ db.collection("cards").orderBy("time","desc")
   });
 });
 
-/* LOAD SIDE MENU (ADMIN CONTROLLED) */
+/* LOAD SIDE MENU */
 db.collection("sideMenu").onSnapshot(snapshot=>{
   sideMenuLinks.innerHTML="";
   snapshot.forEach(doc=>{
@@ -210,7 +235,7 @@ db.collection("sideMenu").onSnapshot(snapshot=>{
   });
 });
 
-/* NOTIFICATIONS WITH LINK */
+/* NOTIFICATIONS */
 function openNotifications(){
   notifyPage.classList.add("open");
   notifyList.innerHTML="Loading...";
@@ -238,13 +263,9 @@ function closeMenu(){sideMenu.classList.remove("open")}
 
 /* NAVIGATION */
 function goHome(){location.href="index.html"}
-function goInfo(){
-  location.href = "Information.html";
-}
+function goInfo(){location.href="Information.html"}
 function goBooks(){location.href="books.html"}
 function goReels(){location.href="reels.html"}
-
-
 </script>
 
 </body>
