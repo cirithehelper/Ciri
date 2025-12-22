@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CIRI — Mobile App</title>
 
-<!-- Firebase CDN (COMPAT ONLY) -->
+<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -110,11 +110,12 @@ body{
   cursor:pointer;
   color:#fff;
 }
+
+/* 🔴 IMPORTANT: NO FILTER – ICONS STAY COLORED */
 .nav-item img{
   width:26px;
   height:26px;
   margin-bottom:4px;
-  filter:brightness(0) invert(1);
 }
 
 /* NOTIFICATION */
@@ -171,14 +172,14 @@ body{
 <!-- CONTENT -->
 <div class="content" id="cards">Loading...</div>
 
-<!-- BOTTOM NAV WITH ICONS -->
+<!-- BOTTOM NAV (COLORED ICONS) -->
 <div class="bottom-nav">
   <div class="nav-item" onclick="goHome()">
-    <img src="icons/home.png">
+    <img src="Rituals.png">
     <span>Home</span>
   </div>
   <div class="nav-item" onclick="goInfo()">
-    <img src="icons/info.png">
+    <img src="Shield.png">
     <span>Info</span>
   </div>
   <div class="nav-item" onclick="goBooks()">
