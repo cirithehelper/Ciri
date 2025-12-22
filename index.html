@@ -1,302 +1,251 @@
-)<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIRI — Mobile App</title>
 
-<html lang="hi">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>CIRI — Mobile App</title>  <style>  
-  
-/* GLOBAL */  
-*{ margin:0; padding:0; box-sizing:border-box; }  
-body{  
-    font-family:'Poppins',sans-serif;  
-    background:#000;  
-    color:white;  
-    overflow-x:hidden;  
-    overflow-y:auto;  
-}  
-  
-/* TOP BAR */  
-.topbar{  
-    width:100%;  
-    height:60px;  
-    background:rgba(15,15,20,0.55);  
-    backdrop-filter:blur(14px);  
-    display:flex;  
-    align-items:center;  
-    justify-content:space-between;  
-    padding:0 22px;  
-    position:fixed;  
-    top:0;  
-    z-index:2000;  
-}  
-.top-btn{ font-size:38px; cursor:pointer; }  
-.title{ font-size:32px; font-weight:700; }  
-  
-/* HOME BACKGROUND */  
-.bg{  
-    width:100%;  
-    height:99vh;  
-    background:url('cir.jpg') center/cover no-repeat;  
-    padding-top:70px;  
-    text-align:center;  
-    position:relative;  
-}  
-.bg::after{  
-    content:"";  
-    position:absolute;  
-    inset:9;  
-    background:linear-gradient(180deg,rgba(0,0,0,0.3),rgba(0,0,0,0.75));  
-    z-index:1;  
-}  
-  
-/* HOME TITLE (DESIGN) */  
-.home-title{  
-    position:relative;  
-    z-index:200;  
-    font-size:35px;  
-    font-weight:100;  
-    margin-top:1px;  
-    text-align:center;  
-    color:#ffffff;  
-    text-shadow:0 0 10px #6d4cff, 0 0 20px #6d4cff;  
-}  
-  
-/* MORE BUTTON (FIXED) */  
-.more-btn{  
-    position:fixed;  
-    bottom:140px;  
-    left:50%;  
-    transform:translateX(-50%);  
-    z-index:2500;  
-    padding:10px 16px;  
-    border:none;  
-    border-radius:30px;  
-    font-size:18px;  
-    background:#6d4cff;  
-    color:white;  
-    cursor:pointer;  
-    box-shadow:0 4px 12px rgba(0,0,0,0.5);  
-}  
-  
-/* SCROLL CONTENT (BACKGROUND IMAGE AREA) */  
-.extra-content{  
-    background:url('cir.jpg') center/cover no-repeat fixed;  
-    padding:40px 20px;  
-    text-align:center;  
-    min-height:600px;  
-    margin-top:20px;  
-    position:relative;  
-}  
-  
-/* Dark overlay */  
-.extra-content::before{  
-    content:"";  
-    position:absolute;  
-    inset:0;  
-    background:rgba(0,0,0,0.55);  
-    z-index:0;  
-}  
-  
-/* SHAYARI CARD VIEW */  
-.ciri-card{  
-    background:#16161d;  
-    margin-bottom:25px;  
-    padding:18px;  
-    border-radius:16px;  
-    box-shadow:0 4px 12px rgba(0,0,0,0.6);  
-    text-align:center;  
-    position:relative;  
-    z-index:2;  
-}  
-.card-img{  
-    width:100%;  
-    height:auto;  
-    border-radius:14px;  
-    margin-bottom:14px;  
-}  
-.card-text{  
-    font-size:18px;  
-    line-height:30px;  
-    font-weight:500;  
-    color:#ffffff;  
-}  
-  
-/* SIDE MENU */  
-.sidemenu{  
-    position:fixed;  
-    top:0;  
-    left:-260px;  
-    width:260px;  
-    height:100vh;  
-    background:#121219;  
-    transition:0.3s ease;  
-    z-index:3000;  
-    padding-top:70px;  
-}  
-.sidemenu.open{ left:0; }  
-.sidemenu a{  
-    display:block;  
-    padding:18px 22px;  
-    color:white;  
-    font-size:18px;  
-    text-decoration:none;  
-    border-bottom:1px solid rgba(255,255,255,0.1);  
-}  
-.closemenu{  
-    position:absolute;  
-    top:20px;  
-    right:20px;  
-    font-size:26px;  
-    cursor:pointer;  
-}  
-  
-/* BOTTOM NAV */  
-.bottom-nav{  
-    position:fixed;  
-    bottom:0;  
-    width:100%;  
-    height:75px;  
-    background:rgba(20,20,26,0.85);  
-    backdrop-filter:blur(10px);  
-    display:flex;  
-    justify-content:space-around;  
-    align-items:center;  
-    z-index:2000;  
-}  
-.nav-item{  
-    text-align:center;  
-    font-size:12px;  
-    cursor:pointer;  
-}  
-.nav-item img{  
-    width:30x;  
-    height:30px;  
-    margin-bottom:3px;  
-}  
-  
-/* NOTIFICATION PAGE */  
-.notify-page{  
-    position:fixed;  
-    top:0;  
-    left:100%;  
-    width:100%;  
-    height:100%;  
-    background:#0f0f15;  
-    z-index:5000;  
-    transition:0.35s ease;  
-    padding-top:60px;  
-    overflow-y:auto;  
-}  
-.notify-page.open{ left:0; }  
-.notify-header{  
-    padding:20px;  
-    font-size:24px;  
-    font-weight:700;  
-}  
-.notify-list{ padding:0 20px; }  
-.notify-item{  
-    background:#1b1b23;  
-    margin-bottom:14px;  
-    padding:14px 16px;  
-    border-radius:14px;  
-    font-size:17px;  
-    line-height:24px;  
-    box-shadow:0 4px 14px rgba(0,0,0,0.5);  
-}  
-  
-</style>  </head>  
-<body>  <!-- TOP BAR -->  <div class="topbar">  
-    <div class="top-btn" onclick="openMenu()">☰</div>  
-    <div class="title">CIRI</div>  
-    <div class="top-btn" onclick="openNotifications()">🔔</div>  
-</div>  <!-- SIDE MENU -->  <div id="sideMenu" class="sidemenu">  
-    <div class="closemenu" onclick="closeMenu()">✕</div>  
-    <a href="#">अपने विचार साझा करें</a>  
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjvEmMiWIbG-31JvvN68jqyYcucdXpHOqOCozWYgXhPIoa8A/viewform">Help</a>  
-  <a href="#">Instagram</a>  
-    <a href="#">Facebook</a>  
-    <a href="#">YouTube</a>  
-    <a href="#">WhatsApp</a>  
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeTFePOJdMY-dbtl4KqOJSpZVnW84m9O6frO5SVlKYNIL9ZpA/viewform">Feedback </a>  
-</div>  <!-- HOME SCREEN -->  <div class="bg">  
-    <div class="home-title">Welcome to Ciri Realm </div>  
-  <div class="home-title">  </div>  
-</div>  <!-- FIXED MORE BUTTON -->  <button class="more-btn" onclick="openMore()">Ciri की दुनियां में प्रवेश </button>
+<!-- Firebase CDN (COMPAT ONLY) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- SCROLL CARDS -->  <div class="extra-content">  
-    <div class="ciri-card">  
-        <img src="card1.jpg" class="card-img">  
-        <p class="card-text">  
-            CIRI न प्रकाश है, न छाया।    
-            CIRI वह शक्ति है जहाँ दोनों मिट जाते हैं।  
-        </p>  
-    </div>  <div class="ciri-card">  
-    <img src="card2.jpg" class="card-img">  
-    <p class="card-text">  
-        यहाँ आओ…    
-        अपनी परछाई को पहचानो — और उसे जला दो।  
-    </p>  
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Poppins,Arial,sans-serif;
+  background:#000;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* TOP BAR */
+.topbar{
+  width:100%;
+  height:60px;
+  background:rgba(15,15,20,0.55);
+  backdrop-filter:blur(14px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  position:fixed;
+  top:0;
+  z-index:2000;
+}
+.top-btn{font-size:30px;cursor:pointer}
+.title{font-size:26px;font-weight:700}
+
+/* SIDE MENU */
+.sidemenu{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100vh;
+  background:#121219;
+  transition:0.3s ease;
+  z-index:3000;
+  padding-top:70px;
+}
+.sidemenu.open{left:0}
+.sidemenu a{
+  display:block;
+  padding:18px 22px;
+  color:#fff;
+  font-size:18px;
+  text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.closemenu{
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:26px;
+  cursor:pointer;
+}
+
+/* CONTENT */
+.content{
+  padding:90px 20px 100px;
+}
+.ciri-card{
+  background:#16161d;
+  margin-bottom:25px;
+  padding:18px;
+  border-radius:16px;
+}
+.card-img{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+.card-text{
+  font-size:18px;
+  line-height:30px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:75px;
+  background:rgba(20,20,26,0.85);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:2000;
+}
+.nav-item{
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* NOTIFICATION */
+.notify-page{
+  position:fixed;
+  top:0;
+  left:100%;
+  width:100%;
+  height:100%;
+  background:#0f0f15;
+  z-index:5000;
+  transition:0.35s ease;
+  padding-top:60px;
+  overflow-y:auto;
+}
+.notify-page.open{left:0}
+.notify-header{
+  padding:20px;
+  font-size:24px;
+  font-weight:700;
+}
+.notify-item{
+  background:#1b1b23;
+  margin:14px;
+  padding:14px 16px;
+  border-radius:14px;
+  font-size:17px;
+  line-height:24px;
+}
+.notify-item a{
+  color:#6d4cff;
+  display:block;
+  margin-top:6px;
+  font-size:15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="top-btn" onclick="openMenu()">☰</div>
+  <div class="title">CIRI</div>
+  <div class="top-btn" onclick="openNotifications()">🔔</div>
 </div>
 
-</div>  <!-- BOTTOM NAV -->  <div class="bottom-nav">  
-    <div class="nav-item" onclick="goHome()"><img src="Rituals.png">Home</div>  
-    <div class="nav-item" onclick="goSearch()"><img src="Information.png"> Information</div>  
-    <div class="nav-item" onclick="goProfile()"><img src="book.png"> Book</div>  
-    <div class="nav-item" onclick="goMenu()"><img src="video.png"> Video</div>  
-</div>  <!-- NOTIFICATION PAGE -->  <div id="notifyPage" class="notify-page">  
-    <div class="notify-header">🔔 सूचनाएँ</div>  
-    <div class="notify-list" id="notifyList"></div>  
-</div>  <script>  
-  
-/* SIDE MENU */  
-function openMenu(){ document.getElementById("sideMenu").classList.add("open"); }  
-function closeMenu(){ document.getElementById("sideMenu").classList.remove("open"); }  
-  
-/* MORE BUTTON */  
-function openMore(){ window.location.href="https://forms.gle/SqArRcvLnsehrmhy8"; }  
-  
-/* REDIRECT */  
-function goHome(){ window.location.href="index.html"; }  
-function goSearch(){ window.location.href="Information.html"; }  
-function goProfile(){ window.location.href="https://agriculturetechblog.myinstamojo.com/shop?ordering=oos%2Csort_order"; }  
-function goMenu(){ window.location.href="reels.html"; }  
-  
-/* NOTIFICATION OPEN */  
-function openNotifications(){  
-    document.getElementById("notifyPage").classList.add("open");  
-    loadNotificationMessage();  
-}  
-  
-function closeNotifications(){  
-    document.getElementById("notifyPage").classList.remove("open");  
-}  
-  
-/* JSON NOTIFICATION ACTIVE (100% WORKING) */  
-function loadNotificationMessage(){  
-  
-    fetch("update.json?ts="+Date.now())  
-    .then(r => r.json())  
-    .then(data => {  
-  
-        let box = document.getElementById("notifyList");  
-        box.innerHTML = "";  
-  
-        if(data.messages && Array.isArray(data.messages)){  
-            data.messages.forEach(msg => {  
-                box.innerHTML += `<div class="notify-item">${msg}</div>`;  
-            });  
-        } else {  
-            box.innerHTML = `<div class='notify-item'>कोई सूचना उपलब्ध नहीं</div>`;  
-        }  
-  
-    })  
-    .catch(err => {  
-        document.getElementById("notifyList").innerHTML =  
-            "<div class='notify-item'>JSON पढ़ा नहीं जा रहा</div>";  
-    });  
-  
-}  
-  
-</script>  </body>  
-</html>  
+<!-- SIDE MENU -->
+<div id="sideMenu" class="sidemenu">
+  <div class="closemenu" onclick="closeMenu()">✕</div>
+  <div id="sideMenuLinks"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="cards">Loading...</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="goHome()">Home</div>
+  <div class="nav-item" onclick="goInfo()">Info</div>
+  <div class="nav-item" onclick="goBooks()">Books</div>
+  <div class="nav-item" onclick="goReels()">Reels</div>
+
+</div>
+
+<!-- NOTIFICATION PAGE -->
+<div id="notifyPage" class="notify-page">
+  <div class="notify-header">🔔 सूचनाएँ</div>
+  <div id="notifyList"></div>
+</div>
+
+<script>
+/* FIREBASE CONFIG (FINAL) */
+firebase.initializeApp({
+  apiKey: "AIzaSyDuSRmCqggE2eS6l3nHciy4cNvrwyw-l_I",
+  authDomain: "cirithe.firebaseapp.com",
+  projectId: "cirithe"
+});
+const db = firebase.firestore();
+
+/* LOAD CARDS */
+db.collection("cards").orderBy("time","desc")
+.onSnapshot(snapshot=>{
+  cards.innerHTML="";
+  if(snapshot.empty){
+    cards.innerHTML="<div class='ciri-card'>कोई कंटेंट नहीं</div>";
+  }
+  snapshot.forEach(doc=>{
+    const d = doc.data();
+    cards.innerHTML+=`
+      <div class="ciri-card">
+        <img src="${d.image}" class="card-img">
+        <p class="card-text">${d.text}</p>
+      </div>
+    `;
+  });
+});
+
+/* LOAD SIDE MENU (ADMIN CONTROLLED) */
+db.collection("sideMenu").onSnapshot(snapshot=>{
+  sideMenuLinks.innerHTML="";
+  snapshot.forEach(doc=>{
+    const d = doc.data();
+    sideMenuLinks.innerHTML+=`
+      <a href="${d.link}" target="_blank">${d.name}</a>
+    `;
+  });
+});
+
+/* NOTIFICATIONS WITH LINK */
+function openNotifications(){
+  notifyPage.classList.add("open");
+  notifyList.innerHTML="Loading...";
+  db.collection("notifications").orderBy("time","desc")
+  .onSnapshot(snapshot=>{
+    notifyList.innerHTML="";
+    if(snapshot.empty){
+      notifyList.innerHTML="<div class='notify-item'>कोई सूचना नहीं</div>";
+    }
+    snapshot.forEach(doc=>{
+      const d = doc.data();
+      notifyList.innerHTML+=`
+        <div class="notify-item">
+          <div>${d.text}</div>
+          ${d.link ? `<a href="${d.link}" target="_blank">Open / More →</a>` : ""}
+        </div>
+      `;
+    });
+  });
+}
+
+/* MENU */
+function openMenu(){sideMenu.classList.add("open")}
+function closeMenu(){sideMenu.classList.remove("open")}
+
+/* NAVIGATION */
+function goHome(){location.href="index.html"}
+function goInfo(){
+  location.href = "Information.html";
+}
+function goBooks(){location.href="books.html"}
+function goReels(){location.href="reels.html"}
+
+
+</script>
+
+</body>
+</html>
