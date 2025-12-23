@@ -2,54 +2,99 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CIRI Blogs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>blogs</title>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#000;color:#fff}
-header{padding:14px;text-align:center;background:#111;font-size:18px;font-weight:600}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:#fff;
+}
 
-/* CARD LIST */
+/* HEADER */
+.header{
+  padding:16px;
+  font-size:18px;
+  font-weight:600;
+  background:#000;
+}
+
+/* LIST VIEW */
+#listView{display:block}
 .card{
   background:#16161d;
   margin:14px;
-  padding:14px;
-  border-radius:14px;
+  border-radius:16px;
+  overflow:hidden;
   cursor:pointer;
 }
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
 .card-title{
-  font-size:18px;
+  padding:14px;
+  font-size:16px;
   font-weight:600;
 }
 
-/* FULL BLOG VIEW */
-.blog{
-  background:#16161d;
+/* READ VIEW */
+#readView{display:none}
+.back{
+  padding:14px;
+  cursor:pointer;
+  color:#6d4cff;
+}
+.blog-title{
+  padding:0 14px 10px;
+  font-size:18px;
+  font-weight:700;
+}
+
+/* 🔥 BLACK BLOG VIEW */
+.blog-content{
+  background:#000;
+  color:#fff;
   margin:14px;
   padding:14px;
+  border-radius:16px;
+}
+.blog-content img{
+  width:100%;
+  margin:12px 0;
   border-radius:14px;
 }
-.blog img{max-width:100%;border-radius:12px;margin:10px 0}
-.blog iframe{width:100%;height:260px;border-radius:12px;margin:10px 0}
-.blog a{color:#6d4cff}
-.back{
-  margin:14px;
-  padding:10px;
-  background:#4f46e5;
-  text-align:center;
-  border-radius:10px;
+.blog-content iframe{
+  width:100%;
+  height:220px;
+  margin:12px 0;
+  border-radius:14px;
 }
 </style>
 </head>
 
 <body>
 
-<header>📖 Blogs</header>
-<div id="view"></div>
+<div class="header" id="headerTitle"></div>
+
+<!-- BLOG LIST -->
+<div id="listView">
+  <div id="blogList">Please wait....</div>
+</div>
+
+<!-- BLOG READ -->
+<div id="readView">
+  <div class="back" onclick="backToList()"> </div>
+  <div class="blog-title" id="readTitle"></div>
+  <div class="blog-content" id="readContent"></div>
+</div>
 
 <script>
 firebase.initializeApp({
@@ -59,40 +104,47 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
-let blogsData = [];
-
-/* LOAD BLOGS */
+/* LOAD BLOG LIST */
 db.collection("blogs").orderBy("time","desc")
-.onSnapshot(snapshot=>{
-  blogsData = [];
-  snapshot.forEach(doc=>{
-    blogsData.push({id:doc.id, ...doc.data()});
-  });
-  showList();
-});
-
-/* SHOW LIST */
-function showList(){
-  view.innerHTML="";
-  blogsData.forEach((b,i)=>{
-    view.innerHTML+=`
-      <div class="card" onclick="openBlog(${i})">
+.onSnapshot(s=>{
+  blogList.innerHTML="";
+  if(s.empty){
+    blogList.innerHTML="<div style='padding:14px'>कोई ब्लॉग नहीं</div>";
+  }
+  s.forEach(d=>{
+    const b=d.data();
+    blogList.innerHTML+=`
+      <div class="card" onclick="openBlog('${d.id}')">
+        ${b.cover?`<img src="${b.cover}">`:``}
         <div class="card-title">${b.title}</div>
       </div>
     `;
   });
+});
+
+/* OPEN BLOG */
+function openBlog(id){
+  listView.style.display="none";
+  readView.style.display="block";
+  headerTitle.innerText="";
+
+  db.collection("blogs").doc(id).get().then(doc=>{
+    if(!doc.exists){
+      readTitle.innerText="Blog नहीं मिला";
+      readContent.innerHTML="";
+      return;
+    }
+    const b=doc.data();
+    readTitle.innerText=b.title;
+    readContent.innerHTML=b.html;
+  });
 }
 
-/* OPEN FULL BLOG */
-function openBlog(i){
-  const b = blogsData[i];
-  view.innerHTML=`
-    <div class="back" onclick="showList()">← Back</div>
-    <div class="blog">
-      <h2>${b.title}</h2>
-      ${b.content}
-    </div>
-  `;
+/* BACK */
+function backToList(){
+  readView.style.display="none";
+  listView.style.display="block";
+  headerTitle.innerText="Blogs";
 }
 </script>
 
