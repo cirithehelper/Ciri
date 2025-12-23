@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -6,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CIRI — Mobile App</title>
 
-<!-- Firebase CDN -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -17,7 +16,7 @@ body{
   font-family:Poppins,Arial,sans-serif;
   background:
     linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.85)),
-    url("bg.jpg") center/cover no-repeat fixed;
+    url("cir.jpg") center/cover no-repeat fixed;
   color:#fff;
   overflow-x:hidden;
 }
@@ -70,7 +69,36 @@ body{
 
 /* CONTENT */
 .content{
-  padding:90px 20px 100px;
+  padding:90px 0 100px;
+}
+
+/* 🔹 HORIZONTAL SECTION */
+.horizontal{
+  display:flex;
+  gap:14px;
+  padding:10px 14px 20px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+.horizontal::-webkit-scrollbar{display:none}
+
+.h-card{
+  min-width:220px;
+  height:140px;
+  background:#16161d;
+  border-radius:16px;
+  overflow:hidden;
+  scroll-snap-align:start;
+}
+.h-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* 🔹 VERTICAL CARDS */
+.vertical{
+  padding:0 20px;
 }
 .ciri-card{
   background:#16161d;
@@ -101,18 +129,13 @@ body{
   align-items:center;
   z-index:2000;
 }
-
 .nav-item{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
   font-size:11px;
   cursor:pointer;
-  color:#fff;
 }
-
-/* 🔴 IMPORTANT: NO FILTER – ICONS STAY COLORED */
 .nav-item img{
   width:26px;
   height:26px;
@@ -143,14 +166,11 @@ body{
   margin:14px;
   padding:14px 16px;
   border-radius:14px;
-  font-size:17px;
-  line-height:24px;
 }
 .notify-item a{
   color:#6d4cff;
   display:block;
   margin-top:6px;
-  font-size:15px;
 }
 </style>
 </head>
@@ -171,50 +191,67 @@ body{
 </div>
 
 <!-- CONTENT -->
-<div class="content" id="cards">Loading...</div>
+<div class="content">
 
-<!-- BOTTOM NAV (COLORED ICONS) -->
+  <!-- 🔹 HORIZONTAL IMAGES -->
+  <div class="horizontal" id="horizontalRow">
+  </div>
+
+  <!-- 🔹 VERTICAL CONTENT -->
+  <div class="vertical" id="cards">
+    please wait...
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <div class="nav-item" onclick="goHome()">
-    <img src="Rituals.png">
-    <span>Home</span>
+    <img src="Rituals.png"><span>Home</span>
   </div>
   <div class="nav-item" onclick="goInfo()">
-    <img src="Shield.png">
-    <span>Info</span>
+    <img src="Shield.png"><span>Info</span>
   </div>
   <div class="nav-item" onclick="goBook()">
-    <img src="book.png">
-    <span>Books</span>
+    <img src="book.png"><span>Books</span>
   </div>
   <div class="nav-item" onclick="goReels()">
-    <img src="video.png">
-    <span>Reels</span>
+    <img src="video.png"><span>Reels</span>
   </div>
 </div>
 
-<!-- NOTIFICATION PAGE -->
+<!-- NOTIFICATION -->
 <div id="notifyPage" class="notify-page">
   <div class="notify-header">🔔 सूचनाएँ</div>
   <div id="notifyList"></div>
 </div>
 
 <script>
-/* FIREBASE CONFIG */
 firebase.initializeApp({
-  apiKey: "AIzaSyDuSRmCqggE2eS6l3nHciy4cNvrwyw-l_I",
-  authDomain: "cirithe.firebaseapp.com",
-  projectId: "cirithe"
+  apiKey:"AIzaSyDuSRmCqggE2eS6l3nHciy4cNvrwyw-l_I",
+  authDomain:"cirithe.firebaseapp.com",
+  projectId:"cirithe"
 });
 const db = firebase.firestore();
 
-/* LOAD CARDS */
+/* HORIZONTAL */
+db.collection("featured").orderBy("time","desc")
+.onSnapshot(s=>{
+  horizontalRow.innerHTML="";
+  s.forEach(d=>{
+    const f=d.data();
+    horizontalRow.innerHTML+=`
+      <div class="h-card">
+        <img src="${f.image}">
+      </div>
+    `;
+  });
+});
+
+/* VERTICAL */
 db.collection("cards").orderBy("time","desc")
 .onSnapshot(snapshot=>{
   cards.innerHTML="";
-  if(snapshot.empty){
-    cards.innerHTML="<div class='ciri-card'>कोई कंटेंट नहीं</div>";
-  }
   snapshot.forEach(doc=>{
     const d = doc.data();
     cards.innerHTML+=`
@@ -226,13 +263,13 @@ db.collection("cards").orderBy("time","desc")
   });
 });
 
-/* LOAD SIDE MENU */
-db.collection("sideMenu").onSnapshot(snapshot=>{
+/* SIDE MENU */
+db.collection("sideMenu").onSnapshot(s=>{
   sideMenuLinks.innerHTML="";
-  snapshot.forEach(doc=>{
-    const d = doc.data();
+  s.forEach(d=>{
+    const x=d.data();
     sideMenuLinks.innerHTML+=`
-      <a href="${d.link}" target="_blank">${d.name}</a>
+      <a href="${x.link}" target="_blank">${x.name}</a>
     `;
   });
 });
@@ -240,21 +277,17 @@ db.collection("sideMenu").onSnapshot(snapshot=>{
 /* NOTIFICATIONS */
 function openNotifications(){
   notifyPage.classList.add("open");
-  notifyList.innerHTML="Loading...";
+  notifyList.innerHTML="";
   db.collection("notifications").orderBy("time","desc")
-  .onSnapshot(snapshot=>{
+  .onSnapshot(s=>{
     notifyList.innerHTML="";
-    if(snapshot.empty){
-      notifyList.innerHTML="<div class='notify-item'>कोई सूचना नहीं</div>";
-    }
-    snapshot.forEach(doc=>{
-      const d = doc.data();
+    s.forEach(d=>{
+      const n=d.data();
       notifyList.innerHTML+=`
         <div class="notify-item">
-          <div>${d.text}</div>
-          ${d.link ? `<a href="${d.link}" target="_blank">Open / More →</a>` : ""}
-        </div>
-      `;
+          ${n.text}
+          ${n.link?`<a href="${n.link}" target="_blank">Open →</a>`:""}
+        </div>`;
     });
   });
 }
@@ -263,10 +296,10 @@ function openNotifications(){
 function openMenu(){sideMenu.classList.add("open")}
 function closeMenu(){sideMenu.classList.remove("open")}
 
-/* NAVIGATION */
+/* NAV */
 function goHome(){location.href="index.html"}
 function goInfo(){location.href="Information.html"}
-function goBooks(){location.href="Book.html"}
+function goBook(){location.href="Book.html"}
 function goReels(){location.href="reels.html"}
 </script>
 
